@@ -1,0 +1,156 @@
+---
+output: pdf_document
+runtime: shiny
+---
+```{r}
+library(shiny)
+library(leaflet)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# Locations in Davis, CA
+locations <- data.frame(
+  name = c("Trader Joe's", "SaveMart", "Safeway A", "Safeway B", "Target", "Davis Co-op"),
+  lat = c(38.5467537, 38.559804, 38.5620828, 38.5412369, 38.5539639, 38.5495574),
+  lon = c(-121.7614973, -121.7584022, -121.7664724, -121.7229385, -121.6999147, -121.739849)
+)
+
+# Ingredient price data by store
+ingredients <- data.frame(
+  stores = c("Trader Joe's", "SaveMart", "Safeway", "Target", "Davis Co-op"),
+  butter = c(3.99, 5.99, 3.99, 4.49, 4.49),
+  white_sugar = c(3.99, 3.99, 3.79, 3.39, 2.49),
+  brown_sugar = c(0, 2.69, 3.79, 2.59, 4.69),
+  eggs = c(4.99, 5.19, 2.99, 3.69, 3.49),
+  vanilla_extract = c(7.99, 6.99, 3.99, 4.19, 5.29),
+  baking_soda = c(0, 1.49, 1.49, 0.99, 0.99),
+  all_purpose_flour = c(2.99, 6.49, 4.49, 2.89, 3.49),
+  chocolate_chips = c(3.99, 6.99, 4.99, 2.79, 3.99),
+  walnuts = c(0, 6.19, 4.99, 4.49, 10.69),
+  custom_sentence = c(
+    "Trader Joe's offers the cheapest prices on unsalted butter alongside Trader Joe's but does not sell brown sugar, baking soda, or chopped walnuts - making it impossible to buy all ingredients needed at this store.",
+    "SaveMart is the most expensive store if you want to buy all ingredients at one store and does not offer the cheapest prices on any ingredient.",
+    "Safeway offers the cheapest prices on unsalted butter, eggs, and vanilla extract and they are the second cheapest store to stop at if you want to buy all ingredients at one store.",
+    "Target is the cheapest store to shop at if you wish to buy all ingredients at one store. They offer the cheapest brown sugar, baking soda, all-purpose flour, semi-sweet chocolate chips, and chopped walnuts - offering the cheapest one-stop shop for all ingredients needed for the recipe.",
+    "Davis Co-op is the second most expensive store to shop at but they do offer the cheapest granulated sugar and baking soda across all of the stores."
+  )
+)
+
+# Reshape store data to long format
+store_data_long <- ingredients %>%
+  pivot_longer(cols = -c(stores, custom_sentence), names_to = "ingredients", values_to = "price")
+
+# Calculate total price for each store
+store_total_price <- store_data_long %>%
+  group_by(stores) %>%
+  summarise(total_price = sum(price, na.rm = TRUE))
+
+ui <- fluidPage(
+  # Custom CSS for font sizes
+  tags$head(
+    tags$style(HTML("
+      .titlePanel h2 { font-size: 36px; font-weight: bold; }
+      .nav-tabs .nav-item .nav-link { font-size: 20px; }
+      .shiny-input-container select { font-size: 18px; }
+    "))
+  ),
+  titlePanel("Grocery Store & Ingredient Data"),
+  tabsetPanel(
+    tabPanel("Stores",
+             h4("Total Cost by Store"),
+             plotOutput("store_plot", height = "1000px", width = "100%")
+    ),
+    tabPanel("Ingredients",
+             selectInput("ingredient_graph",
+                         "Choose an ingredient graph:",
+                         choices = c("Butter", "White Sugar", "Brown Sugar", "Eggs",
+                                     "Vanilla Extract", "Baking Soda", "All-purpose Flour",
+                                     "Chocolate Chips", "Walnuts", "All")
+             ),
+             plotOutput("ingredient_plot", height = "1000px", width = "100%")
+    ),
+    tabPanel("Map",
+             leafletOutput("map"),
+             uiOutput("store_info")
+    )
+  )
+)
+
+server <- function(input, output, session) {
+  # Store data graph
+  output$store_plot <- renderPlot({
+    ggplot(store_data_long, aes(x = stores, y = price, fill = ingredients)) +
+      geom_bar(stat = "identity") +
+      theme_minimal() +
+      labs(title = "Prices of Ingredients by Store", x = "Store", y = "Price ($)") +
+      scale_fill_brewer(palette = "Set3") +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 20))
+  })
+  
+  # Ingredient data graph
+  output$ingredient_plot <- renderPlot({
+    if (input$ingredient_graph == "All") {
+      ggplot(store_data_long, aes(x = stores, y = price, fill = ingredients)) +
+        geom_bar(stat = "identity", position = "dodge") +
+        theme_minimal() +
+        labs(title = "All Ingredients by Store", x = "Store", y = "Price ($)") +
+        scale_fill_brewer(palette = "Set3")
+    } else {
+      ingredient_column <- tolower(gsub("[- ]", "_", input$ingredient_graph))
+      ggplot(ingredients, aes(x = stores, y = .data[[ingredient_column]], fill = stores)) +
+        geom_bar(stat = "identity") +
+        theme_minimal() +
+        labs(title = paste(input$ingredient_graph, "Cost by Store"), x = "Store", y = "Price ($)")
+    }
+  })
+  
+  # Map rendering
+  output$map <- renderLeaflet({
+    leaflet(locations) %>%
+      addTiles() %>%
+      setView(lng = -121.7405, lat = 38.5449, zoom = 13) %>%
+      addCircleMarkers(
+        lat = ~lat, lng = ~lon,
+        radius = 8, color = "blue",
+        stroke = FALSE, fillOpacity = 0.6,
+        layerId = ~name
+      ) %>%
+      addLabelOnlyMarkers(
+        lat = ~lat, lng = ~lon,
+        label = ~name,
+        labelOptions = labelOptions(
+          noHide = TRUE, direction = "top",
+          textOnly = TRUE, style = list("font-weight" = "bold", "color" = "black", "font-size" = "14px")
+        )
+      )
+  })
+  
+  observeEvent(input$map_marker_click, {
+    store_id <- input$map_marker_click$id
+    store_name <- ifelse(grepl("Safeway", store_id), "Safeway", store_id)
+    
+    if (store_name %in% ingredients$stores) {
+      store_data <- ingredients %>% filter(stores == store_name)
+      output$store_info <- renderUI({
+        tagList(
+          h3(paste("Welcome to", store_name, "!")),
+          p(store_data$custom_sentence),
+          tableOutput("store_table")
+        )
+      })
+      output$store_table <- renderTable({
+        store_data %>%
+          select(-stores, -custom_sentence)
+      })
+    } else {
+      output$store_info <- renderUI({
+        h3("Store not found!")
+      })
+    }
+  })
+}
+
+shinyApp(ui = ui, server = server)
+
+```
