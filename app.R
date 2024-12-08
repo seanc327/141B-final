@@ -12,20 +12,6 @@ library(shiny)
 library(tidyverse)
 library(leaflet)
 
-# price data by ingredient
-ingredients = data.frame(
-  stores = c("Trader Joe's","SaveMart","Safeway","Target","Davis Co-op"),
-  butter = c(3.99,5.99,3.99,4.49,4.49),
-  white = c(3.99,3.99,3.79,3.39,2.49),
-  brown = c(0,2.69,3.79,2.59,4.69),
-  eggs = c(4.99,5.19,2.99,3.69,3.49),
-  vanilla = c(7.99,6.99,3.99,4.19,5.29),
-  soda = c(0,1.49,1.49,.99,.99),
-  flour = c(2.99,6.49,4.49,2.89,3.49),
-  choc = c(3.99,6.99,4.99,2.79,3.99),
-  nuts = c(0,6.19,4.99,4.49,10.69)
-)
-
 # price data by store
 stores = data.frame(
   ingredients = c("Butter","White Sugar","Brown Sugar","Eggs","Vanilla","Baking Soda",
@@ -116,12 +102,13 @@ ui <- fluidPage(
                          "Choose an ingredient graph:",
                          choices = c("Butter","White Sugar",
                                      "Brown Sugar","Eggs",
-                                     "Vanilla","Baking Soda",
+                                     "Vanilla Extract","Baking Soda",
                                      "All-purpose Flour","Chocolate Chips",
                                      "Walnuts","All")
              ),
              plotOutput("ingredient_plot", height = "1000px", width = "100%")
     ),
+    # map tab
     tabPanel("Map",
              leafletOutput("map"),
              uiOutput("store_info")
@@ -218,14 +205,14 @@ server <- function(input, output) {
   output$map <- renderLeaflet({
     leaflet(locations) %>%
       addTiles() %>%
-      setView(lng = -121.7405, lat = 38.5449, zoom = 13) %>%
-      addCircleMarkers(
+      setView(lng = -121.7405, lat = 38.5449, zoom = 13) %>% # view of Davis
+      addCircleMarkers( # add markers for each store
         lat = ~lat, lng = ~lon,
         radius = 8, color = "blue",
         stroke = FALSE, fillOpacity = 0.6,
         layerId = ~name
       ) %>%
-      addLabelOnlyMarkers(
+      addLabelOnlyMarkers( # add labels for each marker
         lat = ~lat, lng = ~lon,
         label = ~name,
         labelOptions = labelOptions(
@@ -234,25 +221,25 @@ server <- function(input, output) {
         )
       )
   })
-  
+  # when someone clicks on a dot, the information pops up
   observeEvent(input$map_marker_click, {
     store_id <- input$map_marker_click$id
     store_name <- ifelse(grepl("Safeway", store_id), "Safeway", store_id)
     
     if (store_name %in% ingredients$stores) {
-      store_data <- ingredients %>% filter(stores == store_name)
+      store_data <- ingredients %>% filter(stores == store_name) # get ingredient info from store
       output$store_info <- renderUI({
         tagList(
-          h3(paste("Welcome to", store_name, "!")),
-          p(store_data$custom_sentence),
-          tableOutput("store_table")
+          h3(paste("Welcome to", store_name, "!")), # greeting
+          p(store_data$custom_sentence), # short blurb about the store
+          tableOutput("store_table") # render ingredient info table
         )
       })
       output$store_table <- renderTable({
         store_data %>%
           select(-stores, -custom_sentence)
       })
-    } else {
+    } else { # error
       output$store_info <- renderUI({
         h3("Store not found!")
       })
