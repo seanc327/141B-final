@@ -43,7 +43,7 @@ ingredients <- data.frame(
   chocolate_chips = c(3.99, 6.99, 4.99, 2.79, 3.99),
   walnuts = c(0, 6.19, 4.99, 4.49, 10.69),
   custom_sentence = c(
-    "885 Russell Blvd Davis, CA 95616\nTrader Joe's offers the cheapest prices on unsalted butter alongside Trader Joe's but does not sell brown sugar, baking soda, or chopped walnuts - making it impossible to buy all ingredients needed at this store.",
+    "885 Russell Blvd Davis, CA 95616\nTrader Joe's offers the cheapest prices on unsalted butter alongside SaveMart but does not sell brown sugar, baking soda, or chopped walnuts - making it impossible to buy all ingredients needed at this store.",
     "1900 Anderson Rd Davis, CA 95616\nSaveMart is the most expensive store if you want to buy all ingredients at one store and does not offer the cheapest prices on any ingredient.",
     "1451 W Covell Blvd Davis, CA 95616 (A) or 2121 Cowell Blvd Davis, CA 95616 (B) \nSafeway offers the cheapest prices on unsalted butter, eggs, and vanilla extract and they are the second cheapest store to stop at if you want to buy all ingredients at one store.",
     "4601 2nd St Davis, CA 95618\nTarget is the cheapest store to shop at if you wish to buy all ingredients at one store. They offer the cheapest brown sugar, baking soda, all-purpose flour, semi-sweet chocolate chips, and chopped walnuts - offering the cheapest one-stop shop for all ingredients needed for the recipe.",
