@@ -25,14 +25,14 @@ stores = data.frame(
 
 # Locations in Davis, CA
 locations <- data.frame(
-  name = c("Trader Joe's", "SaveMart", "Safeway A", "Safeway B", "Target", "Davis Co-op"),
+  name = c("Trader Joe's", "SaveMart", "Safeway A", "Safeway B", "Target", "Davis Food Co-op"),
   lat = c(38.5467537, 38.559804, 38.5620828, 38.5412369, 38.5539639, 38.5495574),
   lon = c(-121.7614973, -121.7584022, -121.7664724, -121.7229385, -121.6999147, -121.739849)
 )
 
 # Ingredient price data by store
 ingredients <- data.frame(
-  stores = c("Trader Joe's", "SaveMart", "Safeway", "Target", "Davis Co-op"),
+  stores = c("Trader Joe's", "SaveMart", "Safeway", "Target", "Davis Food Co-op"),
   butter = c(3.99, 5.99, 3.99, 4.49, 4.49),
   white_sugar = c(3.99, 3.99, 3.79, 3.39, 2.49),
   brown_sugar = c(0, 2.69, 3.79, 2.59, 4.69),
@@ -47,7 +47,7 @@ ingredients <- data.frame(
     "1900 Anderson Rd Davis, CA 95616\nSaveMart is the most expensive store if you want to buy all ingredients at one store and does not offer the cheapest prices on any ingredient.",
     "1451 W Covell Blvd Davis, CA 95616 (A) or 2121 Cowell Blvd Davis, CA 95616 (B) \nSafeway offers the cheapest prices on unsalted butter, eggs, and vanilla extract and they are the second cheapest store to stop at if you want to buy all ingredients at one store.",
     "4601 2nd St Davis, CA 95618\nTarget is the cheapest store to shop at if you wish to buy all ingredients at one store. They offer the cheapest brown sugar, baking soda, all-purpose flour, semi-sweet chocolate chips, and chopped walnuts - offering the cheapest one-stop shop for all ingredients needed for the recipe.",
-    "620 G St Davis, CA 95616\nDavis Co-op is the second most expensive store to shop at but they do offer the cheapest granulated sugar and baking soda across all of the stores."
+    "620 G St Davis, CA 95616\nDavis Food Co-op is the second most expensive store to shop at but they do offer the cheapest granulated sugar and baking soda across all of the stores."
   )
 )
 
@@ -142,7 +142,7 @@ server <- function(input, output) {
                                   "svmrt" = "SaveMart",
                                   "sfwy" = "Safeway",
                                   "tgt" = "Target",
-                                  "coop" = "Davis Co-op")) +
+                                  "coop" = "Davis Food Co-op")) +
       theme( # increase font size, add margins, and rotate labels for better readability
         axis.text.x = element_text(angle = 45, hjust = 1,size=20),
         axis.title.x = element_text(margin = margin(t = 20),size=28),
@@ -171,7 +171,7 @@ server <- function(input, output) {
         expand_limits(y = max(store_data_long$price) + 1) + # increase limits
         # change the names on the legend
         scale_fill_manual(values = c("tjs" = "red", "svmrt" = "blue", "sfwy" = "green", "tgt" = "purple", "coop" = "orange"),
-                          labels = c("Trader Joe's", "SaveMart", "Safeway", "Target", "Davis Co-op")) +
+                          labels = c("Trader Joe's", "SaveMart", "Safeway", "Target", "Davis Food Co-op")) +
         theme( # make text easier to read
           axis.text.x = element_text(angle = 45, hjust = 1,size=20),
           axis.title.x = element_text(margin = margin(t = 20),size=28),
