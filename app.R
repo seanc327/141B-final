@@ -12,20 +12,6 @@ library(shiny)
 library(tidyverse)
 library(leaflet)
 
-# price data by ingredient
-ingredients = data.frame(
-  stores = c("Trader Joe's","SaveMart","Safeway","Target","Davis Co-op"),
-  butter = c(3.99,5.99,3.99,4.49,4.49),
-  white = c(3.99,3.99,3.79,3.39,2.49),
-  brown = c(0,2.69,3.79,2.59,4.69),
-  eggs = c(4.99,5.19,2.99,3.69,3.49),
-  vanilla = c(7.99,6.99,3.99,4.19,5.29),
-  soda = c(0,1.49,1.49,.99,.99),
-  flour = c(2.99,6.49,4.49,2.89,3.49),
-  choc = c(3.99,6.99,4.99,2.79,3.99),
-  nuts = c(0,6.19,4.99,4.49,10.69)
-)
-
 # price data by store
 stores = data.frame(
   ingredients = c("Butter","White Sugar","Brown Sugar","Eggs","Vanilla","Baking Soda",
@@ -116,7 +102,7 @@ ui <- fluidPage(
                          "Choose an ingredient graph:",
                          choices = c("Butter","White Sugar",
                                      "Brown Sugar","Eggs",
-                                     "Vanilla","Baking Soda",
+                                     "Vanilla Extract","Baking Soda",
                                      "All-purpose Flour","Chocolate Chips",
                                      "Walnuts","All")
              ),
