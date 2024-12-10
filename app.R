@@ -11,6 +11,7 @@
 library(shiny)
 library(tidyverse)
 library(leaflet)
+library(DT)
 
 # price data by store
 stores = data.frame(
@@ -49,6 +50,14 @@ ingredients <- data.frame(
     "4601 2nd St Davis, CA 95618\nTarget is the cheapest store to shop at if you wish to buy all ingredients at one store. They offer the cheapest brown sugar, baking soda, all-purpose flour, semi-sweet chocolate chips, and chopped walnuts - offering the cheapest one-stop shop for all ingredients needed for the recipe.",
     "620 G St Davis, CA 95616\nDavis Food Co-op is the second most expensive store to shop at but they do offer the cheapest granulated sugar and baking soda across all of the stores."
   )
+)
+
+# table for ingredients and their measurements
+table = data.frame(
+  quantity = c(1,1,1,2,2,1,3,2,1),
+  unit = c("cup","cup","cup","large","teaspoons","teaspoon","cups","cups","cup"),
+  ingredient = c("Unsalted Butter","White Sugar","Brown Sugar","Eggs","Vanilla Extract",
+                 "Baking Soda","All-purpose Flour","Semisweet Chocolate Chips","Chopped Walnuts")
 )
 
 # Reshape store data to long format
@@ -112,6 +121,10 @@ ui <- fluidPage(
     tabPanel("Map",
              leafletOutput("map"),
              uiOutput("store_info")
+    ),
+    # ingredients tab
+    tabPanel("Relevant Ingredients Table",
+             DTOutput("table")
     )
   ))
 
@@ -245,6 +258,10 @@ server <- function(input, output) {
         h3("Store not found!")
       })
     }
+  })
+  # table of ingredients
+  output$table = renderDT({
+    datatable(table)
   })
 }
 
