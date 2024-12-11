@@ -1,5 +1,6 @@
-# Shiny App to display bar graphs comparing grocery data
-#
+# Shiny App to display bar graphs and maps comparing grocery data. Also table showing information 
+# from the best chocolate chip cookie recipe
+# 
 # This is a Shiny web application. You can run the application by clicking
 # the 'Run App' button above.
 #
@@ -122,8 +123,8 @@ ui <- fluidPage(
              leafletOutput("map"),
              uiOutput("store_info")
     ),
-    # ingredients tab
-    tabPanel("Relevant Ingredients Table",
+    # ingredients information tab
+    tabPanel("Relevant Ingredient Information from Allrecipes' 'Best Chocolate Chip Cookies Recipe'",
              DTOutput("table")
     )
   ))
