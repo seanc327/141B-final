@@ -124,7 +124,7 @@ ui <- fluidPage(
              uiOutput("store_info")
     ),
     # ingredients information tab
-    tabPanel("Relevant Ingredient Information from Allrecipes' 'Best Chocolate Chip Cookies Recipe'",
+    tabPanel("'Best Chocolate Chip Cookies Recipe' Ingredients",
              DTOutput("table")
     )
   ))
