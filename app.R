@@ -100,13 +100,13 @@ ui <- fluidPage(
   # create tabs
   tabsetPanel(
     # store tab
-    tabPanel("Stores",
+    tabPanel("Store Graphs",
              h4("Total Cost by Store"),
              # output for selected store plot
              plotOutput("store_plot", height = "1000px", width = "100%")
     ),
     # ingredients tab
-    tabPanel("Ingredients",
+    tabPanel("Ingredient Graphs",
              # drop down to choose an ingredient
              selectInput("ingredient_graph",
                          "Choose an ingredient graph:",
@@ -124,7 +124,7 @@ ui <- fluidPage(
              uiOutput("store_info")
     ),
     # ingredients information tab
-    tabPanel("'Best Chocolate Chip Cookies Recipe' Ingredients",
+    tabPanel("'Best Chocolate Chip Cookies Recipe' Ingredient Measurements",
              DTOutput("table")
     )
   ))
