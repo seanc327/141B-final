@@ -100,7 +100,7 @@ ui <- fluidPage(
   # create tabs
   tabsetPanel(
     # store tab
-    tabPanel("Store Graphs",
+    tabPanel("Stores Graph",
              h4("Total Cost by Store"),
              # output for selected store plot
              plotOutput("store_plot", height = "1000px", width = "100%")
